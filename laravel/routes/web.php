@@ -1,7 +1,9 @@
 <?php
+use App\Models\Post;
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\PostController;
+use App\Http\Controllers\UserController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -13,6 +15,24 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
+header("Access-Control-Allow-Origin: http://localhost:4200");
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 Route::get('/', function () {
-    return view('welcome');
+    $posts = Post::all();
+    return view('home', ['posts' => $posts]);
 });
+
+Route::post('/register', [UserController::class, 'register']);
+Route::get('/edit_user/{user}', [UserController::class, 'editPage']);
+Route::put('/edit_user/{user}', [UserController::class, 'userEdit']);
+Route::delete('/delete_user/{user}', [UserController::class, 'deleteUser']);
+Route::post('/logout', [UserController::class, 'logout']);
+Route::post('/login', [UserController::class, 'login']);
+
+//Post controller action
+Route::post('/create_post', [PostController::class, 'createPost']);
+Route::get('/edit_post/{post}', [PostController::class, 'editPage']);
+Route::put('/edit_post/{post}', [PostController::class, 'postEdit']);
+Route::delete('/delete_post/{post}', [PostController::class, 'deletePost']);
