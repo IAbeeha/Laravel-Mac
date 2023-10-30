@@ -67,8 +67,8 @@
     <h2>Log in</h2>
     <form action="/login" method="POST">
       @csrf
-      <input name="login_email" type="email" placeholder="email">
-      <input name="login_password" type="password" placeholder="password">
+      <input name="email" type="email" placeholder="email">
+      <input name="password" type="password" placeholder="password">
       <button>Log in</button>
     </form>
   </div>

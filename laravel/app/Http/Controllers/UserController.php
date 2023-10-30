@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Hash;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -16,10 +16,25 @@ class UserController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required', 'min:4']
         ]);
-        if (auth()->attempt(['email' => $validate_fields['email'], 'password' => $validate_fields['password']])) {
-            $request->session()->regenerate();
-        }
-        return "user logged in";
+        $user = User::where('email', $validate_fields['email'])->first();
+ 
+    if (!$user) {
+        // User not found
+        return "User not found.";
+    }
+    if (Hash::check($validate_fields['password'], $user->password)) {
+        // Password is correct
+        auth()->login($user);
+        $request->session()->regenerate();
+        return "User logged in.";
+    } else {
+        // Password is incorrect
+        return "Incorrect password.";
+    }
+        // if (auth()->attempt(['email' => $validate_fields['email'], 'password' => $validate_fields['password']])) {
+        //     $request->session()->regenerate();
+        // }
+        // return "user logged in";
     }
 
     public function logout()
