@@ -17,7 +17,7 @@ class PostController extends Controller
         $validate_fields['body'] = strip_tags($validate_fields['body']);
         $validate_fields['user_id'] = auth()->id();
         Post::create($validate_fields);
-        return redirect('/');
+        return "created";
     }
 
     public function editPage(Post $post)
@@ -27,6 +27,7 @@ class PostController extends Controller
         }
         return view('edit_post', ['post' => $post]);
     }
+
 
     public function postEdit(Post $post, Request $request)
     {
@@ -46,11 +47,11 @@ class PostController extends Controller
         return redirect('/');
     }
 
-    public function deletePost(Post $post)
-    {
-        if (auth()->user()->id === $post['user_id']) {
-            $post->delete();
-        }
-        return redirect('/');
-    }
+    // public function deletePost(Post $post)
+    // {
+    //     if (auth()->user()->id === $post['user_id']) {
+    //         $post->delete();
+    //     }
+    //     return redirect('/');
+    // }
 }

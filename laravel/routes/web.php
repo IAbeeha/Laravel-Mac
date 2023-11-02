@@ -24,15 +24,15 @@ Route::get('/', function () {
     return view('home', ['posts' => $posts]);
 });
 
-Route::post('/register', [UserController::class, 'register']);
-Route::get('/edit_user/{user}', [UserController::class, 'editPage']);
-Route::put('/edit_user/{user}', [UserController::class, 'userEdit']);
-Route::delete('/delete_user/{user}', [UserController::class, 'deleteUser']);
-Route::post('/logout', [UserController::class, 'logout']);
-Route::post('/login', [UserController::class, 'login']);
+// Route::post('/register', [UserController::class, 'register']);
+// Route::get('/edit_user/{user}', [UserController::class, 'editPage']);
+// Route::put('/edit_user/{user}', [UserController::class, 'userEdit']);
+// // Route::delete('/delete_user/{user}', [UserController::class, 'deleteUser']);
+// Route::post('/logout', [UserController::class, 'logout']);
+// Route::post('/login', [UserController::class, 'login']);
 
-//Post controller action
-Route::post('/create_post', [PostController::class, 'createPost']);
-Route::get('/edit_post/{post}', [PostController::class, 'editPage']);
-Route::put('/edit_post/{post}', [PostController::class, 'postEdit']);
-Route::delete('/delete_post/{post}', [PostController::class, 'deletePost']);
+// //Post controller action
+// Route::post('/create_post', [PostController::class, 'createPost']);
+// Route::get('/edit_post/{post}', [PostController::class, 'editPage']);
+// Route::put('/edit_post/{post}', [PostController::class, 'postEdit']);
+// Route::delete('/delete_post/{post}', [PostController::class, 'deletePost']);
