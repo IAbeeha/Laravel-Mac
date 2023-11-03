@@ -32,8 +32,9 @@ Route::group([
     Route::post('/create-blog', [AuthController::class,'createPost']);
     Route::get('/posts', [AuthController::class,'postIndex']);
     Route::post('/delete-post', [AuthController::class,'deletePost']);
-    Route::post('/update-post/{post}', [AuthController::class,'postEdit']);//put or patch
+    Route::patch('/update-post/{post}', [AuthController::class,'postEdit']);//put or patch
     Route::post('/logout', [AuthController::class,'logout']);
+    Route::get('/get-post/{post}', [AuthController::class,'getPost']);
 
     // Route::delete('/delete-post/{post}', [AuthController::class,'deletePost']);
 

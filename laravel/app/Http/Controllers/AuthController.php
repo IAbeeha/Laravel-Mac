@@ -48,7 +48,9 @@ class AuthController extends Controller
             'body' => $post->body,
             'user' => $post->user,
             'likes' => $post->likes()->where('liked', true)->count(),
-            'dislikes' => $post->likes()->where('liked', false)->count()
+            'dislikes' => $post->likes()->where('liked', false)->count(),
+            'image_url'=> $post->image_url
+
         ];
     });
     return response()->json($postsWithLikesDislikes);
@@ -59,13 +61,16 @@ class AuthController extends Controller
     {
         $validate_fields = $request->validate([
             'title' => 'required',
-            'body' => 'required'
+            'body' => 'required',
+            'image_url'=> 'required'
+
         ]);
         $validate_fields['title'] = strip_tags($validate_fields['title']);
         $validate_fields['body'] = strip_tags($validate_fields['body']);
+        $validate_fields['image_url'] = strip_tags($validate_fields['image_url']);
         $validate_fields['user_id'] = auth()->id();
         Post::create($validate_fields);
-        return response()->json("CREATED bLOG ");
+        return response()->json("CREATED BLOG ");
     }
 
     public function register(Request $request) {
@@ -159,11 +164,26 @@ class AuthController extends Controller
 
         $incomingFields['title'] = strip_tags($incomingFields['title']);
         $incomingFields['body'] = strip_tags($incomingFields['body']);
+        $validate_fields['image_url'] = strip_tags($validate_fields['image_url']);
 
         $post->update($incomingFields);
         return response()->json(['message' => 'post updated']);
     }
+    public function getPost(Post $post){
+        $final= [
+                'id' => $post->id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'user' => $post->user,
+                'likes' => $post->likes()->where('liked', true)->count(),
+                'dislikes' => $post->likes()->where('liked', false)->count(),
+                'image_url'=> $post->image_url
+            ];
+        // error_log($final);
 
+        return response()->json($final);
+    }
+   
 
     /**
      * Get the token array structure.
