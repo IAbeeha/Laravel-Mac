@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Post;
+use Illuminate\Validation\Rule;
 
 
 use Illuminate\Http\Request;
@@ -44,7 +45,7 @@ class AuthController extends Controller
         return [
             'id' => $post->id,
             'title' => $post->title,
-            'content' => $post->content,
+            'body' => $post->body,
             'user' => $post->user,
             'likes' => $post->likes()->where('liked', true)->count(),
             'dislikes' => $post->likes()->where('liked', false)->count()
@@ -68,22 +69,21 @@ class AuthController extends Controller
     }
 
     public function register(Request $request) {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|between:2,100',
-            'email' => 'required|string|email|max:100|unique:users',
-            'password' => 'required|string|between:4,100',
-        ]);
-        if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
+        if (User::where('email', $request['email'])->first()) {
+            return "Email already taken";
+        } elseif (strlen($request['password']) < 5) {
+            return "The length of the password should be atleast 5 characters.";
+        } else {
+            $validate_fields = $request->validate([
+                'name' => 'required',
+                'email' => ['required', 'email', Rule::unique('users', 'email')],
+                'password' => ['required', 'min:4']
+            ]);
+            $validate_fields['password'] = bcrypt($validate_fields['password']);
+            $user = User::create($validate_fields);
+            auth()->login($user);
+            return "user created";
         }
-        $user = User::create(array_merge(
-                    $validator->validated(),
-                    ['password' => bcrypt($request->password)]
-                ));
-        return response()->json([
-            'message' => 'User successfully registered',
-            'user' => $user
-        ], 201);
     }
     
     public function deletePost(Request  $request)

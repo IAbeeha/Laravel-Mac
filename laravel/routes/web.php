@@ -19,10 +19,12 @@ use App\Http\Controllers\UserController;
 // header("Access-Control-Allow-Origin: *");
 // header('Access-Control-Allow-Methods: *');
 // header("Access-Control-Allow-Headers: Content-Type, Authorization");
-Route::get('/', function () {
-    $posts = Post::all();
-    return view('home', ['posts' => $posts]);
-});
+// Route::get('/', function () {
+//     $posts = Post::all();
+//     return view('home', ['posts' => $posts]);
+// });
+
+Route::get('/posts', [AuthController::class,'postIndex']);
 
 // Route::post('/register', [UserController::class, 'register']);
 // Route::get('/edit_user/{user}', [UserController::class, 'editPage']);

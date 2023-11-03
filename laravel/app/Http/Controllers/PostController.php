@@ -54,4 +54,21 @@ class PostController extends Controller
     //     }
     //     return redirect('/');
     // }
+    public function postIndex()
+    {
+        $posts = Post::with('user')->get();
+    
+        // Loop through each post and add the likes and dislikes counts
+        $postsWithLikesDislikes = $posts->map(function ($post) {
+            return [
+                'id' => $post->id,
+                'title' => $post->title,
+                'content' => $post->content,
+                'user' => $post->user,
+                'likes' => $post->likes()->where('liked', true)->count(),
+                'dislikes' => $post->likes()->where('liked', false)->count()
+            ];
+        });
+        return response()->json($postsWithLikesDislikes);
+    }
 }

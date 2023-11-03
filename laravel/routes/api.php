@@ -20,7 +20,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::group([
 
-    'middleware' => 'api',
+    'middleware' => 'api', 'cors',
     'prefix' => 'auth'
 
 ], function ($router) {
@@ -33,7 +33,7 @@ Route::group([
     Route::get('/posts', [AuthController::class,'postIndex']);
     Route::post('/delete-post', [AuthController::class,'deletePost']);
     Route::post('/update-post/{post}', [AuthController::class,'postEdit']);//put or patch
-    Route::post('logout', [AuthController::class,'logout']);
+    Route::post('/logout', [AuthController::class,'logout']);
 
     // Route::delete('/delete-post/{post}', [AuthController::class,'deletePost']);
 
