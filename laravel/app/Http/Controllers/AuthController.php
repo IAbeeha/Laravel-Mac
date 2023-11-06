@@ -36,9 +36,12 @@ class AuthController extends Controller
   
    
 
- public function postIndex()
+ public function postIndex(Request $request)
 {
-    $posts = Post::with('user')->get();
+    // error_log($request);
+    // return response()->json($request);
+    $perPage = 10;//$request->input('per_page', 10);
+    $posts = Post::with('user')->paginate($perPage);
 
     // Loop through each post and add the likes and dislikes counts
     $postsWithLikesDislikes = $posts->map(function ($post) {
@@ -53,7 +56,10 @@ class AuthController extends Controller
 
         ];
     });
-    return response()->json($postsWithLikesDislikes);
+    // error_log($postsWithLikesDislikes);
+    return response()->json([
+        'data'=>$postsWithLikesDislikes, 
+    'total_pages'=>$posts->lastPage()]);
 }
 
 
@@ -69,7 +75,6 @@ class AuthController extends Controller
         $validate_fields['image_url'] = strip_tags($validate_fields['image_url']);
         $validate_fields['user_id'] = auth()->id();
         Post::create($validate_fields);
-
         return response()->json("CREATED BLOG ");
     }
 
