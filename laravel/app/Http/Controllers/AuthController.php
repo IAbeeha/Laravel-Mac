@@ -63,13 +63,13 @@ class AuthController extends Controller
             'title' => 'required',
             'body' => 'required',
             'image_url'=> 'required'
-
         ]);
         $validate_fields['title'] = strip_tags($validate_fields['title']);
         $validate_fields['body'] = strip_tags($validate_fields['body']);
         $validate_fields['image_url'] = strip_tags($validate_fields['image_url']);
         $validate_fields['user_id'] = auth()->id();
         Post::create($validate_fields);
+
         return response()->json("CREATED BLOG ");
     }
 
@@ -93,11 +93,10 @@ class AuthController extends Controller
     
     public function deletePost(Request  $request)
     {
-        // error_log($request["id"]);
-        $post = Post::find($request["id"])->first();
+        $post = Post::where('id', $request["id"])->first();
         if($post)
         {
-            if ($post->user_id !== auth()->user()->id) 
+            if ($post->user_id != auth()->user()->id) 
             {
                 return response()->json(['error' => 'Only owner can delete his post']);
             }
@@ -161,11 +160,16 @@ class AuthController extends Controller
             'title' => 'required',
             'body' => 'required'
         ]);
-
+        if ($request['image_url']==null)
+       { 
         $incomingFields['title'] = strip_tags($incomingFields['title']);
         $incomingFields['body'] = strip_tags($incomingFields['body']);
-        $validate_fields['image_url'] = strip_tags($validate_fields['image_url']);
-
+       } 
+       else {
+        $incomingFields['title'] = strip_tags($incomingFields['title']);
+        $incomingFields['body'] = strip_tags($incomingFields['body']);
+        $incomingFields['image_url'] = strip_tags($request['image_url']);
+       }
         $post->update($incomingFields);
         return response()->json(['message' => 'post updated']);
     }

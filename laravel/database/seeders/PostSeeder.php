@@ -15,7 +15,7 @@ class PostSeeder extends Seeder
         // $faker->title
         // $faker->text
         Post::factory()
-        ->times(50)
+        ->times(2500)
         ->create();
         //
     }
