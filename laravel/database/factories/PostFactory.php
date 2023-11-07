@@ -22,7 +22,7 @@ class PostFactory extends Factory
         return [
             'title' => $this->faker->words(3, true),
             'body' => $this->faker->sentence(50),
-            'user_id' => $this->faker->numberBetween(25, 50),
+            'user_id' => $this->faker->numberBetween(1, 50),
             'image_url' => $this->faker->imageUrl($width = 640, $height = 480),
             //
         ];

@@ -35,6 +35,7 @@ Route::group([
     Route::patch('/update-post/{post}', [AuthController::class,'postEdit']);//put or patch
     Route::post('/logout', [AuthController::class,'logout']);
     Route::get('/get-post/{post}', [AuthController::class,'getPost']);
+    Route::get('/myposts', [AuthController::class,'Myposts']);
 
     // Route::delete('/delete-post/{post}', [AuthController::class,'deletePost']);
 

@@ -52,14 +52,40 @@ class AuthController extends Controller
             'user' => $post->user,
             'likes' => $post->likes()->where('liked', true)->count(),
             'dislikes' => $post->likes()->where('liked', false)->count(),
-            'image_url'=> $post->image_url
-
+            'image_url'=> $post->image_url,
+            'created_at'=> ($post->created_at)->format('F j, Y')
         ];
     });
     // error_log($postsWithLikesDislikes);
     return response()->json([
         'data'=>$postsWithLikesDislikes, 
     'total_pages'=>$posts->lastPage()]);
+}
+
+public function Myposts(Request $request)
+{
+    $user = auth()->user(); 
+
+    $perPage = $request->input('per_page', 10); 
+    $posts = Post::with('user')
+        ->where('user_id', $user->id)
+        ->paginate($perPage);
+
+        $postsWithLikesDislikes = $posts->map(function ($post) {
+            return [
+                'id' => $post->id,
+                'title' => $post->title,
+                'body' => $post->body,
+                'user' => $post->user,
+                'likes' => $post->likes()->where('liked', true)->count(),
+                'dislikes' => $post->likes()->where('liked', false)->count(),
+                'image_url'=> $post->image_url,
+                'created_at'=> ($post->created_at)->format('F j, Y')
+            ];
+        });
+        return response()->json([
+                'data'=>$postsWithLikesDislikes, 
+            'total_pages'=>$posts->lastPage()]);
 }
 
 
@@ -223,9 +249,16 @@ class AuthController extends Controller
     // error_log($post);
     $user = auth()->user();
     $like = $user->likes()->where('post_id', $post->id)->first();
-
+    // error_log();
     if ($like) {
-        $like->update(['liked' => true]);
+        if ($like->liked==1){
+            $like->delete();
+            return response()->json(['message' => 'post unliked']);
+
+        }
+        else {
+            $like->update(['liked' => true]);
+        }
     } else {
         $user->likes()->create([
             'post_id' => $post->id,
