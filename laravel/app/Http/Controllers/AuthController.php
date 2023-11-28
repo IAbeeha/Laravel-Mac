@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Post;
 use Illuminate\Validation\Rule;
+use App\Models\Comment;
 
 
 use Illuminate\Http\Request;
@@ -41,8 +42,8 @@ class AuthController extends Controller
     // error_log($request);
     // return response()->json($request);
     $perPage = 10;//$request->input('per_page', 10);
-    $posts = Post::with('user')->paginate($perPage);
-
+    $posts = Post::with('user')->orderBy('id', 'DESC')->paginate($perPage);
+// error_log();
     // Loop through each post and add the likes and dislikes counts
     $postsWithLikesDislikes = $posts->map(function ($post) {
         return [
@@ -205,21 +206,35 @@ public function Myposts(Request $request)
         return response()->json(['message' => 'post updated']);
     }
     public function getPost(Post $post){
-        $final= [
-                'id' => $post->id,
-                'title' => $post->title,
-                'body' => $post->body,
-                'user' => $post->user,
-                'likes' => $post->likes()->where('liked', true)->count(),
-                'dislikes' => $post->likes()->where('liked', false)->count(),
-                'image_url'=> $post->image_url
-            ];
-        // error_log($final);
+        $postWithComments = Post::with('comments')->find($post->id);
 
+        // Transform post data
+        $final = [
+            'id' => $postWithComments->id,
+            'title' => $postWithComments->title,
+            'body' => $postWithComments->body,
+            'user' => $postWithComments->user,
+            'likes' => $postWithComments->likes()->where('liked', true)->count(),
+            'dislikes' => $postWithComments->likes()->where('liked', false)->count(),
+            'image_url'=> $postWithComments->image_url,
+            'comments' => $this->transformComments($postWithComments->comments),
+        ];
+    
         return response()->json($final);
     }
    
+    private function transformComments($comments) {
+        return $comments->map(function ($comment) {
+            return [
+                'id' => $comment->id,
+                'body' => $comment->body,
+                'user' => $comment->user,
+                'created_at' => $comment->created_at->format('F j, Y')
 
+                // Add any other fields you want to include in the response
+            ];
+        });
+    }
     /**
      * Get the token array structure.
      *
@@ -274,7 +289,13 @@ public function dislike(Post $post)
     $like = $user->likes()->where('post_id', $post->id)->first();
 
     if ($like) {
+        if ($like->liked==0){
+            $like->delete();
+            return response()->json(['message' => 'dislike removed']);
+        }
+        else {
         $like->update(['liked' => false]);
+        }
     } else {
         $user->likes()->create([
             'post_id' => $post->id,
@@ -284,6 +305,38 @@ public function dislike(Post $post)
     return response()->json(['message' => 'post disliked']);
 }
 
+
+public function search(Request $request)
+{
+    $searchTerm = $request->input('search');
+    
+    // Perform the search in the database
+    $posts = Post::where('title', 'like', '%' . $searchTerm . '%')->get();
+    $postsWithLikesDislikes = $posts->map(function ($post) {
+        return [
+            'id' => $post->id,
+            'title' => $post->title,
+            'body' => $post->body,
+            'user' => $post->user,
+            'likes' => $post->likes()->where('liked', true)->count(),
+            'dislikes' => $post->likes()->where('liked', false)->count(),
+            'image_url'=> $post->image_url,
+            'created_at'=> ($post->created_at)->format('F j, Y'),
+        ];
+    });
+    return response()->json($postsWithLikesDislikes);
+}
+public function create_comment(Request $request, $postId)
+    {
+        $post = Post::find($postId);
+        // error_log($post);
+        $comment = new Comment();
+        $comment->user_id = auth()->user()->id; // Assuming you're using Laravel's built-in authentication
+        $comment->body = $request->input('body');
+        error_log($request);
+        $post->comments()->save($comment);
+        return  response()->json(['message' => 'comment created sucessfully']);
+    }
 
 
 }

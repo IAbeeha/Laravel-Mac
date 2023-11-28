@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ImageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -36,8 +37,10 @@ Route::group([
     Route::post('/logout', [AuthController::class,'logout']);
     Route::get('/get-post/{post}', [AuthController::class,'getPost']);
     Route::get('/myposts', [AuthController::class,'Myposts']);
-
-    // Route::delete('/delete-post/{post}', [AuthController::class,'deletePost']);
+    Route::get('/search', [AuthController::class,'search']);
+    Route::post('/upload-image', [ImageController::class,'upload']);
+    Route::get('/posts/{id}', [AuthController::class, 'show']);
+    Route::post('/posts/{postId}/comments', [AuthController::class, 'create_comment']);
 
     // Route::post('logout', 'AuthController@logout');
     // Route::post('refresh', 'AuthController@refresh');
